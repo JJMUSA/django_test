@@ -24,7 +24,7 @@ Once your virtual environment is running your can go ahead and install the requi
 ```shell
  pip install -r requirements.txt
 ``` 
-With that done you can now launch the api by running:
+With that done you can now launch the view by running:
 ```shell
  python manage.py runserver --host 0.0.0.0
 ```
