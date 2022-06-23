@@ -18,6 +18,12 @@ class Reservation(models.Model):
     checkout = models.DateField(blank=False, null=False)
     rental_id = models.ForeignKey(to=Rental, on_delete=models.CASCADE, null=False)
 
+    @property
+    def previous_reservation(self):
+        try:
+            return Reservation.objects.filter(rental_id=self.rental_id, checkin__lt=self.checkin).latest("checkin").id
+        except Reservation.DoesNotExist:
+            return ''
 
     def save(self, *args, **kwargs):
         #checkout of the previous reservation
