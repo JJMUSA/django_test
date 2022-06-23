@@ -8,15 +8,15 @@ from rental_reservation import views
 class ReservationsViewsTest(TestCase):
     @staticmethod
     def create_rentals(rental_names):
-        return [Rental.objects.create(r) for r in rental_names]
+        return [Rental.objects.create(name=r) for r in rental_names]
 
 
     @staticmethod
-    def create_reservation(reservations):
+    def create_reservations(reservations):
         for rev in reservations:
             rev.save()
 
-    def test_no_reservations(self):
+    def test_no_reservation(self):
         response = self.client.get(reverse('reservation_list'))
         self.assertEqual(response.status_code, 200)
         self.assertQuerysetEqual(response.context['reservation_table'], [])
@@ -35,9 +35,10 @@ class ReservationsViewsTest(TestCase):
                             checkout=date(year=2022, month=2, day=11), rental_id=rentals[1])
                 ]
         self.create_reservations(revs)
+        previous_revs = [None, revs[0].id, revs[1].id, None, revs[3].id]
         expected_query_set = [{'Rental_name': rev.get_rental_name(), 'ID': rev.id,
                                'Checkin': rev.checkin.strftime('%Y-%m-%d'), 'Checkout': rev.checkout.strftime('%Y-%m-%d'),
-                               "Last_reservation": rev.previous_reservation} for rev in revs]
+                               "Last_reservation": pre_rev} for rev, pre_rev in zip(revs, previous_revs)]
 
         response = self.client.get(reverse('reservation_list'))
         self.assertEqual(response.status_code, 200)
