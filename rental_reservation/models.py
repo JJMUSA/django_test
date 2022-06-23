@@ -23,12 +23,15 @@ class Reservation(models.Model):
         try:
             return Reservation.objects.filter(rental_id=self.rental_id, checkin__lt=self.checkin).latest("checkin").id
         except Reservation.DoesNotExist:
-            return ''
+            return None
+
+    def get_rental_name(self):
+        return self.rental_id.name
 
     def save(self, *args, **kwargs):
         #checkout of the previous reservation
         previous_rev_checkout = Reservation.objects.get(pk=self.previous_reservation).checkout \
-            if self.previous_reservation != '' else self.checkin
+            if not (self.previous_reservation is None) else self.checkin
         # reservation checkin must be greater than or equal to last checkout and greater than reservation checkout
         if previous_rev_checkout <= self.checkin < self.checkout:
             super(Reservation, self).save(*args, **kwargs)

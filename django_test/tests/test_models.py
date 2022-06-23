@@ -61,3 +61,5 @@ class ReservationTest(TestCase):
                           checkout=checkout_date, rental_id=rental)
 
 
+
+
